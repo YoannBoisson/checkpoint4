@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS `ingesta`.`users` (
   `weight` INT NOT NULL,
   `height` INT NOT NULL,
   `id_activity` INT NOT NULL,
-  `password` VARCHAR(45) NOT NULL,
+  `hashedPassword` VARCHAR(255) NOT NULL,
+  `token` VARCHAR(255) NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   INDEX `id_activity_idx` (`id_activity` ASC) VISIBLE,
   CONSTRAINT `id_activity`
