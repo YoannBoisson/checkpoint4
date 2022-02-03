@@ -33,6 +33,7 @@ usersRouter.post("/", (req, res) => {
   let validationErrors = null;
   User.findByEmail(email)
     .then((existingUserWithEmail) => {
+      
       if (existingUserWithEmail) return Promise.reject("DUPLICATE_EMAIL");
       validationErrors = User.validate(req.body);
       if (validationErrors) return Promise.reject("INVALID_DATA");
