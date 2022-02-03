@@ -1,1 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Leckerli+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Leckerli+One&family=Montserrat&display=swap');
 
+body {
+  margin: 0;
+  padding: 0;
+  height: 130vh;
+  background-color: #dfe9f3;
+  background-image: linear-gradient(39deg, #dfe9f3 0%, #ffffff 100%);
+  background-repeat: no-repeat;
+  font-family: sans-serif;
+}

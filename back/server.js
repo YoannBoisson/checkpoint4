@@ -3,6 +3,7 @@ const app = express();
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const { setupRoutes } = require("./routes/index");
+const db = require("./config/db-config");
 
 const port = process.env.PORT || 3001;
 
@@ -37,9 +38,8 @@ app.post("/mailto", (req, res) => {
   let mailOptions = {
     from: "yoann.devtest@gmail.com", // sender address
     to: req.body.to, // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: `<h1 style='color:#FBAB7E;'>Hello ${req.body.name}</h1><h2 style='color:#F7CE68;'>Bienvenue dans la communauté</h2>`,
+    subject: req.body.subject, // Subject line
+    html: `<h1 style='color:#F48B0C;'>Merci pour votre message !</h1><h2 style='color:#46474B;'>En voici une copie : <br>${req.body.html}</h2><h3 style='color:#1C232D;'>Je reviendrai vers vous rapidement.</h3><p style='color:#1C232D;'>Diététiquement,<br> Yoann</p>`,
   };
 
   transporter.sendMail(mailOptions, function (err, success) {
@@ -51,6 +51,54 @@ app.post("/mailto", (req, res) => {
     res.status(200).send(success.messageId);
   }
 });
+})
+
+app.get('/activity', (req, res) => {
+  db.query("SELECT * FROM activity", (err, result)=> {
+    if(err){
+      console.log(err)
+    } else {
+      res.status(200).send(result)
+    }
+  })
+})
+
+app.get('/quantity/:id', (req, res) => {
+  db.query(
+    "SELECT F.energy, quantity FROM food F JOIN user_food ON id_food=F.id AND id_user=?", [req.params.id], (err, result) => {
+      if (err){
+        console.log(err)
+      } else {
+        res.status(200).send(result)
+      }
+    }
+  );
+})
+
+app.post('/quantity', (req, res) => {
+  const {id_user, id_food, quantity} = req.body
+  db.query(
+    "INSERT INTO user_food (id_user, id_food, quantity) VALUES (?, ?, ?)",
+    [id_user, id_food, quantity],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.status(201).send(result);
+      }
+    }
+  );
+})
+
+app.delete('/quantity/:id', (req,res) => {
+
+  db.query("DELETE FROM user_food WHERE id_user=?", [req.params.id], (err, result) => {
+    if (err){
+      console.log(err)
+    } else {
+      res.status(200).send(result)
+    }
+  })
 })
 
 //=== Port

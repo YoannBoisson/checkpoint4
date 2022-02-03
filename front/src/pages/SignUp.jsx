@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -21,6 +21,8 @@ import FemaleIcon from "@mui/icons-material/Female";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import Tooltip from "@mui/material/Tooltip";
+import axios from "axios";
 
 function Copyright(props) {
   return (
@@ -48,7 +50,18 @@ export default function SignUp() {
   const [height, setHeight] = useState("");
   const [sex, setSex] = useState("");
   const [password, setPassword] = useState("");
-  const [id_activity, setActivity] = useState('');
+  const [id_activity, setActivity] = useState("");
+  const [activity, setActivityForm] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    axios.get("http://localhost:3001/activity").then((res) => {
+      setActivityForm(res.data);
+      setIsLoading(false);
+    });
+  }, []);
+  console.log(activity);
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -65,12 +78,17 @@ export default function SignUp() {
         height,
         sex,
         password,
-        id_activity        
+        id_activity,
       }),
     }).then((result) => {
-      setUsername('')
-      setEmail('')
-      setSex('')
+      setUsername("");
+      setEmail("");
+      setSex("");
+      setDob("");
+      setWeight("");
+      setHeight("");
+      setPassword("");
+      setActivity("");
 
       console.log(result);
     });
@@ -97,10 +115,9 @@ export default function SignUp() {
   };
   const handleChangeSex = (event) => {
     event.preventDefault();
-    if (event.target.value === 'true'){
-setSex(true);
-    }  else
-    setSex(false)
+    if (event.target.value === "true") {
+      setSex(true);
+    } else setSex(false);
   };
   const handleChangeEmail = (event) => {
     event.preventDefault();
@@ -122,7 +139,6 @@ setSex(true);
     event.preventDefault();
     setDob(event.target.value);
   };
-
 
   return (
     <Container component="main" maxWidth="xs">
@@ -230,13 +246,21 @@ setSex(true);
                   label="Activité Physique*"
                   onChange={handleChange}
                 >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value={1}>Ten</MenuItem>
-                  <MenuItem value={2}>Twenty</MenuItem>
-                  <MenuItem value={3}>Thirty</MenuItem>
+                  {activity &&
+                    activity.map((item) => (
+                      <MenuItem value={item.id}>{item.level}</MenuItem>
+                    ))}
                 </Select>
+                <Tooltip
+                  title="Sédentaire, pas d’activité physique &brvbar; &brvbar;
+                  Activité de faible intensité 1 à 3 fois par semaine &brvbar; &brvbar;
+                  Personne active / Exercices d’intensité modérée 3 à 5 fois par semaine / Marche 2 à 5 km par jour / Fait entre 9400 pas et 23 500 pas &brvbar; &brvbar;
+                  Personne très active / Exercices de forte intensité 6 fois par semaine / Marche plus de 5 km par jour / Fait plus de 23 500 pas &brvbar; &brvbar;
+                  Activité physique intense tous les jours, au travail ou en entraînement / S’entraîne 2 fois par jour"
+                  placement="bottom"
+                >
+                  <Button>Détails</Button>
+                </Tooltip>
               </FormControl>
             </Grid>
             <Grid item xs={12}>
