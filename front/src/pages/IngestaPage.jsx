@@ -17,7 +17,8 @@ export default function IngestaPage() {
   const [quantity, setQuantity] = useState("");
   const [apport, setApport] = useState("");
   const [besoin, setBesoin] = useState("");
-
+  const [activity, setActivity] = useState("");
+ const [objective, setObjective] = useState('')
   const [total, setTotal] = useState([]);
 
 
@@ -39,6 +40,18 @@ export default function IngestaPage() {
       setIsLoading(false);
     });
   }, []);
+
+  //=== Multiplicateur activité
+    useEffect(() => {
+      setIsLoading(true);
+      axios.get("http://localhost:3001/activity").then((res) => {
+        setActivity(res.data);
+        setObjective(res.data[2])
+        setIsLoading(false);
+      });
+    }, []);
+
+    console.log(activity)
 
   //=== Besoins
   function handleApport() {
@@ -101,7 +114,6 @@ export default function IngestaPage() {
         console.log(err)
       });
     }
-    console.log(total)
 
   return (
     <Box>
@@ -121,17 +133,34 @@ export default function IngestaPage() {
           <CircularProgress color="inherit" />
         </Backdrop>
       ) : (
-        <Grid container spacing={3} sx={{ margin: 1 }}>
+        <Grid container spacing={2} sx={{ margin: 1 }}>
           <Grid item xs={5}>
             <TextField
               id="filled-number"
-              label="Objectif quotidien"
+              label="Dépense basale"
               type="number"
               value={apport}
               InputLabelProps={{
                 shrink: true,
               }}
               onChange={(e) => setApport(e.target.value)}
+              variant="filled"
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="start">kcal</InputAdornment>
+                ),
+              }}
+            />
+          </Grid>
+          <Grid item xs={5}>
+            <TextField
+              id="filled-number"
+              label="Objectif quotidien"
+              type="number"
+              value={apport * objective.coefficient}
+              InputLabelProps={{
+                shrink: true,
+              }}
               variant="filled"
               InputProps={{
                 endAdornment: (
@@ -152,12 +181,9 @@ export default function IngestaPage() {
               }}
               variant="filled"
             />
-            <Button variant="contained" sx={{ margin: 1 }} onClick={addFood}>
-              Ajouter à ma ration
-            </Button>
           </Grid>
-          <Grid item xs={11} md={3}>
-            <FormControl sx={{width : 300}}>
+          <Grid item xs={11} md={11}>
+            <FormControl sx={{ width: 300 }}>
               <InputLabel id="demo-simple-select-label">Aliment</InputLabel>
               <Select value={aliment} label="Aliment" onChange={handleChange}>
                 {food &&
@@ -210,14 +236,35 @@ export default function IngestaPage() {
                   />
                 </Grid>
               ))}
-          <Grid item xs={11}>
+          <Grid item xs={12}>
+            <Button variant="contained" sx={{ margin: 1 }} onClick={addFood}>
+              Ajouter à ma ration
+            </Button>
+          </Grid>
+          <Grid item xs={11} sx={{ textAlign: "center" }}>
+            <Typography sx={{ fontFamily: "Montserrat", fontSize: 30 }}>
+              Total quotidien
+            </Typography>
             {total && (
-              <Typography>
+              <Typography
+                sx={{
+                  color:
+                    total
+                      .map((ration) => ration.quantity)
+                      .reduce((acc, currentValue) => {
+                        return acc + currentValue;
+                      }, 0) > objective
+                      ? "red"
+                      : "green",
+                  fontFamily: "Montserrat",
+                  fontSize: 30,
+                }}
+              >
                 {total
                   .map((ration) => ration.quantity)
                   .reduce((acc, currentValue) => {
                     return acc + currentValue;
-                  }, 0)}
+                  }, 0)}{" "}
                 kcal
               </Typography>
             )}

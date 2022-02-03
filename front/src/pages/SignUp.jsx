@@ -53,6 +53,7 @@ export default function SignUp() {
   const [id_activity, setActivity] = useState("");
   const [activity, setActivityForm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [envoi, setEnvoi] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -81,29 +82,11 @@ export default function SignUp() {
         id_activity,
       }),
     }).then((result) => {
-      setUsername("");
-      setEmail("");
-      setSex("");
-      setDob("");
-      setWeight("");
-      setHeight("");
-      setPassword("");
-      setActivity("");
-
+      
+      setEnvoi(true);
       console.log(result);
     });
   };
-
-  console.log(
-    username,
-    date_of_birth,
-    email,
-    weight,
-    height,
-    sex,
-    password,
-    id_activity
-  );
 
   const handleChange = (event) => {
     setActivity(event.target.value);
@@ -180,6 +163,11 @@ export default function SignUp() {
                 name="Date de naissance"
                 onChange={handleChangeDob}
               />
+              {date_of_birth &&
+              date_of_birth.length > 0 &&
+              date_of_birth.length < 10 ? (
+                <Typography variant="h7" color="red">Format JJ/MM/AAAA requis</Typography>
+              ) : null}
             </Grid>
             <Grid item xs={12} sm={12} sx={{ textAlign: "center" }}>
               <FormControl>
@@ -294,6 +282,13 @@ export default function SignUp() {
           >
             S'inscrire
           </Button>
+          {envoi && (
+            <Typography
+              sx={{ fontFamily: "Montserrat", color: "green", fontSize: 25 }}
+            >
+              Inscription effectuée
+            </Typography>
+          )}
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Link to="/signin" variant="body2">

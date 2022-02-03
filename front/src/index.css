@@ -10,3 +10,13 @@ body {
   background-repeat: no-repeat;
   font-family: sans-serif;
 }
+
+.title {
+  background-image: url("https://www.aafoodservice.com/wp-content/themes/custom-theme/img/slider-v1704.jpg");
+  height: 340px;
+  width: 100%;
+  text-align: center;
+  color: white;
+  background-repeat: no-repeat;
+    padding-top: 13em;
+}
